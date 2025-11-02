@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\API\TaxPayerAuthController;
 use App\Http\Controllers\AuthUserController;
 use App\Http\Controllers\BankAccController;
 use App\Http\Controllers\CustomizeRoleController;
@@ -12,8 +13,11 @@ use App\Http\Controllers\TblPropUseIDController;
 use Illuminate\Support\Facades\Route;
 
 require __DIR__ . '/api/auth.php';
+require __Dir__. '/api/taxpayer_auth.php';
 
 Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/tax-payer-info', [TaxPayerAuthController::class, 'getUserInfo'])->name('user.info');
+
     Route::prefix('user')->middleware(['permissions:profile_all'])->group(function () {
         Route::get('/profile', [AuthUserController::class, 'userProfile'])->name('user.userProfile');
         Route::put('/profile', [AuthUserController::class, 'updateUserProfile'])->name('user.updateProfile');
