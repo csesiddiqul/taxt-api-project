@@ -10,7 +10,7 @@ use Illuminate\Support\Str;
 use Carbon\Carbon;
 use App\Services\SmsService;
 
-class TaxPayerAuthController extends Controller
+class TaxPayerAuthController extends BaseController
 {
 
     protected $smsService;
@@ -87,7 +87,20 @@ class TaxPayerAuthController extends Controller
         $client->phone_verification_code = $code;
         $client->save();
         $result = $this->smsService->sendSms($client->BillingAddress,  $client->phone_verification_code);
-        return response()->json(['success' => true, 'message' => $result, 200]);
+
+        // if (is_string($result) && str_contains($result, 'Error')) {
+        //     return response()->json([
+        //         'success' => false,
+        //         'message' => 'Failed to send SMS',
+        //         'error' => $result,
+        //     ], 500);
+        // }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Verification code sent successfully.',
+            'sms_response' => $result,
+        ], 200);
     }
 
     // Login
@@ -100,26 +113,34 @@ class TaxPayerAuthController extends Controller
 
         $client = TaxPayer::where('ClientNo', $request->ClientNo)->first();
 
-        if (!$client || !Hash::check($request->password, $client->password)) {
-            return response()->json(['success' => false, 'message' => 'Invalid credentials'], 401);
+        if (!$client) {
+            return $this->sendError('Unauthorized.', ['ClientNo' => 'Client number not found.'], 404);
         }
 
-        if (!$client->is_phone_verified) {
-            return response()->json(['success' => false, 'message' => 'Phone not verified'], 403);
+        if (!Hash::check($request->password, $client->password)) {
+            return $this->sendError('Unauthorized.', ['password' => 'Invalid password.'], 404);
         }
 
-        // $token = $client->createToken('api-token')->plainTextToken;
 
+
+        // Token create
         $tokenResult = $client->createToken(
             'api-token',
             ['*'],
-            Carbon::now()->addHour()
+            now()->addHours(1)
         );
 
         $token = $tokenResult->plainTextToken;
 
-        return response()->json(['success' => true, 'token' => $token, 'client' => $client]);
+        return $this->sendResponse(
+            'Client login successfully.',
+            [
+                'token' => $token,
+                'client' => $client,
+            ]
+        );
     }
+
 
     // Logout
     public function logout(Request $request)
