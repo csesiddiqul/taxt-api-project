@@ -5,6 +5,7 @@ use App\Http\Controllers\BankAccController;
 use App\Http\Controllers\StreetController;
 use App\Http\Controllers\TaxPayerController;
 use App\Http\Controllers\TaxpayerTypeController;
+use App\Http\Controllers\BillregisterController;
 use App\Http\Controllers\TaxRateController;
 use App\Http\Controllers\TblPropTypeController;
 use App\Http\Controllers\TblPropUseIDController;
@@ -33,4 +34,14 @@ Route::middleware('auth:sanctum')->group(function () {
             ->middleware(['permissions:dashboard']);
         Route::get('tax-payer-list', [TaxPayerController::class, 'taxPayer'])->middleware(['permissions:dashboard']);
     });
+
+
+   
 });
+
+
+    Route::prefix('bill')->group(function () {
+        Route::post('/general', [BillregisterController::class, 'billgenerate']);
+        Route::post('/govt',    [BillregisterController::class, 'govtbillgenerate']);
+        Route::post('/single',  [BillregisterController::class, 'singlebillgenerate']);
+    });
