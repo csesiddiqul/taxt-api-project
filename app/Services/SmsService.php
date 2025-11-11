@@ -26,7 +26,7 @@ class SmsService
         if ($response->failed()) {
             throw new \Exception('Failed to send SMS: ' . $response->body());
         }
-        
+
         return $response->body();
     }
 

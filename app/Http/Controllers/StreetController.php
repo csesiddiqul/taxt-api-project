@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\StreetsExport;
 use App\Http\API\BaseController;
 use App\Http\Resources\StreetResource;
 use App\Models\Street;
@@ -10,9 +11,21 @@ use App\Http\Requests\UpdateStreetRequest;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 
 class StreetController extends BaseController
 {
+
+    public function exportExcel(Request $request)
+    {
+        try {
+            $fileName = 'streets_' . now()->format('Y_m_d_H_i_s') . '.xlsx';
+            return Excel::download(new StreetsExport($request->search), $fileName);
+        } catch (\Exception $exception) {
+            return $this->sendError('Excel export failed.', $exception->getMessage());
+        }
+    }
+
     /**
      * Display a listing of the resource.
      */

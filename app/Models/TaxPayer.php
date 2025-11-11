@@ -3,18 +3,18 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Laravel\Sanctum\HasApiTokens;
 
-class TaxPayer extends Model
+class TaxPayer extends Authenticatable
 {
+    use HasApiTokens, HasFactory;
     protected $table = 'Client_Information';
     protected $primaryKey = 'ClientNo';
     protected $keyType = 'string';
     public $incrementing = false;
     public $timestamps = false;
 
-    /** @use HasFactory<\Database\Factories\TaxPayerFactory> */
-    use HasFactory;
 
     protected $guarded = [];
 
@@ -41,4 +41,9 @@ class TaxPayer extends Model
     {
         return $this->belongsTo(BankAcc::class, 'BankNo', 'BankNo');
     }
+
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
 }
