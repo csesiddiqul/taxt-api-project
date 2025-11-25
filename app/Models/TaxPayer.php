@@ -5,9 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 
 class TaxPayer extends Authenticatable
 {
+    use HasRoles;
     use HasApiTokens, HasFactory;
     protected $table = 'Client_Information';
     protected $primaryKey = 'ClientNo';
@@ -17,7 +19,7 @@ class TaxPayer extends Authenticatable
 
 
     protected $guarded = [];
-
+    
     // Relationship: TaxPayer belongsTo Street
 
     public function street()
